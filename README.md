@@ -1,6 +1,6 @@
-# emailing_phishing_detector 
+# email_phishing_detector 
 
-Mysql_enumerator is a tool that can be used to evaluate the security posture of a MySQL database. The tool allows for a user to understand the layout of the database by outputting an organized report of the different schemas and tables. The tool can be used both in an offensive or defensive role, whether it is to evaluate the attack surface of the database or to extract information from it. 
+Email_phishing_detector is a tool that can be used to determine the trustworthiness of an email. The main purpose of the tool is to get around the difficulties of evaluating the legitimacy of shortened urls within emails by reaching out the url shortening services via API and returning the original URLs. This tool automatically extracts link from an email and expands them if necessary. It then submits all links to virus total in order to help make a final determination on whether or not the email is a phishing attempt.
 
 
 ## Table of Contents
@@ -13,28 +13,29 @@ Mysql_enumerator is a tool that can be used to evaluate the security posture of 
 
 ## Key Features
 
-* Build a detailed report on the layout of the database
-* Collect information on database users and their associated permissions
-* Can operate with a user with limited permissions  
-* Extract tables from the database and export them to an excel file
+* Automatically extract links from an email
+* Takes shortened URLs and expands them into their original form
+* Compatible with multiple URL shortening services including bitly and tiny url  
+* Submits links to virus total and builds a report
 
 
 ## Installation
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/chrome-dino/mysql_enumerator.git
+$ git clone https://github.com/chrome-dino/email_phishing_detector.git
 
 # From the directory containing your git projects
-$ pip install -e mysql_enumerator
+$ pip install -e email_phishing_detector
 ```
 
-Uses the following non standard libraries:
-* pandas
-* pymysql
+Uses the following python libraries:
+* pyshorteners
+* virustotal_python
 * setuptools
-* cryptography
-* openpyxl
+* base64
+* argparse
+* sys
 
 
 ## How To Use
