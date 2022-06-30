@@ -1,0 +1,2 @@
+from email_phishing_detector.email_phishing_detector import EmailPhishingDetector
+from email_phishing_detector.email_phishing_detector import *
