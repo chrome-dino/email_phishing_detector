@@ -43,27 +43,15 @@ Uses the following python libraries:
 ### Help Menu
 
 ```bash
-usage: __main__.py [-h] -db HOSTNAME -u USERNAME -p PASSWORD [-port PORT] [-s SCHEMA] [-t TABLE] [-a | --admin | --no-admin]
-                   [-v | --verbose | --no-verbose]
+usage: __main__.py [-h] -f FILE -k KEY [-p PASSWORD] -m MODE
 
 options:
   -h, --help            show this help message and exit
-  -db HOSTNAME, --hostname HOSTNAME
-                        IP address or hostname of the target database
-  -u USERNAME, --username USERNAME
-                        Login username
+  -f FILE, --file FILE  path to email file
+  -k KEY, --key KEY     virus total api key
   -p PASSWORD, --password PASSWORD
-                        Login Password
-  -port PORT, --port PORT
-                        Port number (Defaults to 3306)
-  -s SCHEMA, --schema SCHEMA
-                        Name of the schema to be used in table extraction mode. Requires the table option
-  -t TABLE, --table TABLE
-                        Name of the table to be used in table extraction mode. Requires the schema option
-  -a, --admin, --no-admin
-                        Enable admin mode to extract database user info. Requires admin credentials
-  -v, --verbose, --no-verbose
-                        List additional details in the user report
+                        password for url shortening service
+  -m MODE, --mode MODE  Name of url shortening service. Must be one of: bitly or tinyurl
 ```
 
 ### Video
