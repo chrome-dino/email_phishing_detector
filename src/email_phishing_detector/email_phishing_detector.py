@@ -7,6 +7,7 @@ from email import policy
 from email.parser import BytesParser
 import re
 import hashlib
+import os
 
 class EmailPhishingDetector():
 
@@ -38,6 +39,7 @@ class EmailPhishingDetector():
     @staticmethod
     def get_hash():
         hashes = []
+
         for root, dirs, files in os.walk('.\\email_phishing_detector\\src\\email_phishing_detector\\attachments'):
             for file in files:
                 if file == 'README':
@@ -56,30 +58,17 @@ class EmailPhishingDetector():
             print('URLs in Email Body')
             for link in links:
                 try:
-                    #resp = vtotal.request("urls", data={"url": link}, method="POST")
                     print('----------------------------------------------------------')
                     url_id = urlsafe_b64encode(link.encode()).decode().strip("=")
                     resp = vtotal.request(f"urls/" + url_id)
-                    print(resp.object_type)
-                    print(resp.data)
-            
+                    print(f"URL: {link}")
+                    print(f"Link: {resp.data['links']}")
+                    print()
+                    for x in resp.data['attributes']['last_analysis_results']:
+                        print(f"Engine: {x}, Category: {resp.data['attributes']['last_analysis_results'][x]['category']}, Result: {resp.data['attributes']['last_analysis_results'][x]['result']}")
+                    
+                                        
 
-                    #print('----------------------------------------------------------')
-                    #print('Scan for File: ' + hash['filename'])
-                    #print('Scan Date: ' + response['results']['scan_date'])
-                    #print('MD5:' + response['results']['md5'])
-                    #print('SHA256:' + response['results']['sha256'])
-                    #print('Detection Rate: ' + str(response['results']['positives']) + '/' + str(response['results']['total']))
-                    #print('----------------------------------------------------------')
-                    #for key in response['results']['scans']:
-                    #    vt_submission = response['results']['scans'][key]
-
-                    #    print('Source: ' + key)
-                    #    print('\tDetected: ' + str(vt_submission['detected']))
-                    #    if vt_submission['detected']:
-                    #        print('\tfilename: ' + vt_submission['result'])
-                    #    print('\tUpdate: ' + vt_submission['update'])
-                    #    print('')
 
                 except virustotal_python.VirustotalError as err:
                     print(f"Failed to send URL: {link} for analysis and get the report: {err}")
@@ -97,11 +86,17 @@ class EmailPhishingDetector():
                 for hash in hashes:
                     try:
                         print('----------------------------------------------------------')
-                        resp = vtotal.request(f"files/" + hash)
-                        print(resp.object_type)
-                        print(resp.data)
+                        resp = vtotal.request(f"files/{hash['md5']}")
+
+                        print(f"Filename: {hash['filename']}")
+                        print(f"Md5: {hash['md5']}")
+                        print(f"Type: {resp.data['attributes']['type_description']}")
+                        print(f"Link: {resp.data['links']}")
+                        print()
+                        for x in resp.data['attributes']['sandbox_verdicts']:
+                            print(f"Sandbox: {resp.data['attributes']['sandbox_verdicts'][x]['sandbox_name']}, Category: {resp.data['attributes']['sandbox_verdicts'][x]['category']}, Classification: {resp.data['attributes']['sandbox_verdicts'][x]['malware_classification']}")
                     except virustotal_python.VirustotalError as err:
-                        print(f"Failed to send file: {hash} for analysis and get the report: {err}")
+                        print(f"Failed to send file: {hash['filename']} for analysis and get the report: {err}")
                         continue
 
                 print('----------------------------------------------------------')
@@ -121,13 +116,20 @@ class EmailPhishingDetector():
         fp.close()
 
         # get attachments
-        msg = email.message_from_file(open(self.email))
+
+        for root, dirs, files in os.walk('.\\email_phishing_detector\\src\\email_phishing_detector\\attachments'):
+            for file in files:
+                if file == 'README':
+                    continue
+                os.remove(os.path.join(root,file))
+        msg = email.message_from_file(open(self.file))
         attachments=msg.get_payload()
         for attachment in attachments:
             try:
                 fnam=attachment.get_filename()
+                if not fnam:
+                    continue
                 f=open('.\\email_phishing_detector\\src\\email_phishing_detector\\attachments\\' + fnam, 'wb').write(attachment.get_payload(decode=True,))
-                f.close()
             except Exception as e:
                 print(e)
                 pass
@@ -135,8 +137,7 @@ class EmailPhishingDetector():
         return urls
 
     def run(self):
-        links = self.email_scan
-        expanded_links = self.expanded_links(links)
+        links = self.email_scan()
+        expanded_links = self.expand_links(links)
         self.virus_total(expanded_links)
-        return
         
