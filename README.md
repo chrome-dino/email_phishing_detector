@@ -60,14 +60,11 @@ options:
 ### Examples
 
 ```bash
-# run the report generator with a standard user
-$ py -m mysql_enumerator -db hostname -u user -p password
+# Scan urls and attachments for the input email file. Supply a vt api key with the k flag
+$ py -m email_phishing_detector -m tinyurl -f  EMAIL_FILE -k API_KEY
 
-# run the report generator with elevated permissions and extract info on database users
-$ py -m mysql_enumerator -db hostname -u root -p password -a
-
-# extract the rows from a table
-$ py -m mysql_enumerator -db hostname -u user -p password -s schema_name -t table_name1,table_name2
+# some services, like bitly, require a password. Use the p flag for these cases
+$ py -m email_phishing_detector -m bitly -f  EMAIL_FILE -k API_KEY -p PASSWORD
 ```
 
 
